@@ -10,10 +10,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_PATH="$SCRIPT_DIR/send_ip.py"
 SERVICE_NAME="send_ip"
 CURRENT_USER="$(whoami)"
+VENV_DIR="$SCRIPT_DIR/.venv"
 
-# --- Install dependency ---
+# --- Ensure python3-venv is available (Debian/Ubuntu/Raspberry Pi OS/JetPack) ---
+if ! python3 -m venv --help &>/dev/null; then
+    echo "==> Installing python3-venv..."
+    sudo apt-get install -y python3-venv
+fi
+
+# --- Create virtual environment and install dependency ---
+echo "==> Creating virtual environment..."
+python3 -m venv "$VENV_DIR"
+
 echo "==> Installing requests..."
-pip3 install requests --quiet || sudo pip3 install requests --quiet
+"$VENV_DIR/bin/pip" install requests --quiet
 
 # --- Create systemd service ---
 echo "==> Creating systemd service..."
@@ -26,7 +36,7 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 EnvironmentFile=-${SCRIPT_DIR}/.env
-ExecStart=/usr/bin/python3 ${SCRIPT_PATH}
+ExecStart=${VENV_DIR}/bin/python ${SCRIPT_PATH}
 User=${CURRENT_USER}
 RemainAfterExit=yes
 
