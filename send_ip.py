@@ -14,12 +14,12 @@ def get_ip():
 
 def send_to_slack(ip):
     data = {
-        "text": f"🚀 **Jetson Online!**\n**Hostname:** `aries`\n**Local IP:** `{ip}`",
+        "text": f"🚀 *Jetson Online!*\n*Hostname:* `aries`\n*Local IP:* `{ip}`",
         "username": "Jetson Orin Nano"
     }
     try:
         response = requests.post(WEBHOOK_URL, json=data)
-        if response.status_code == 204:
+        if response.status_code == 200:
             print("Message sent to Slack!")
     except Exception as e:
         print(f"Error: {e}")
