@@ -1,10 +1,10 @@
 # ip_addr_send
 
-Automatically sends your edge device's local IP address to a Slack channel on boot. Useful for headless devices (Jetson Nano, Raspberry Pi, etc.) where you need to know the IP without a monitor.
+Automatically sends your edge device's IP address(es) to a Slack channel on boot. Useful for headless devices (Jetson Orin Nano, Raspberry Pi, etc.) where you need to know the IP without a monitor. Supports both IPv4 and IPv6.
 
 ## How it works
 
-On startup, the script waits 15 seconds for WiFi to stabilize, fetches the local IP, and posts it to a Slack channel via an Incoming Webhook.
+On startup, the script waits 15 seconds for the network to stabilize, fetches both the IPv4 and IPv6 addresses (whichever are available), and posts them to a Slack channel via an Incoming Webhook.
 
 ## Setup
 
