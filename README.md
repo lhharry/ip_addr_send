@@ -1,54 +1,20 @@
-# ip_addr_send
+# ip_addr_send (ip-watch branch)
 
-Automatically sends your edge device's IP address(es) to a Slack channel on boot. Useful for headless devices (Jetson Orin Nano, Raspberry Pi, etc.) where you need to know the IP without a monitor. Supports both IPv4 and IPv6.
+Watches this Ubuntu machine's IP addresses (DHCP) and posts to Slack whenever they change.
+Like the `main` branch, but runs continuously instead of only once at boot.
 
-## How it works
+Install on a new PC:
 
-On startup, the script waits 15 seconds for the network to stabilize, fetches both the IPv4 and IPv6 addresses (whichever are available), and posts them to a Slack channel via an Incoming Webhook.
+    git clone -b ip-watch https://github.com/lhharry/ip_addr_send
+    cd ip_addr_send
 
 ## Setup
+1. Create a Slack Incoming Webhook for your channel (api.slack.com/apps → Incoming Webhooks).
+2. `cp .env.example .env` and set `SLACK_WEBHOOK_URL`.
+3. Test: `set -a; . ./.env; set +a; python3 ip_watch.py --once --send`
+4. Install: `bash setup_service.sh`
 
-### 1. Create a Slack Webhook
-
-1. Go to [api.slack.com/apps](https://api.slack.com/apps) → **Create New App** → **From scratch**
-2. Under **Incoming Webhooks**, toggle it ON
-3. Click **Add New Webhook to Workspace**, pick a channel, and copy the URL
-
-### 2. Configure the script
-
-Copy `.env.example` to `.env` and paste your webhook URL:
-
-```bash
-cp .env.example .env
-```
-
-Then edit `.env`:
-
-```
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-```
-
-The `.env` file is gitignored and will never be committed.
-
-### 3. Deploy on the device
-
-Copy the files onto the device, then run:
-
-```bash
-bash setup_service.sh
-```
-
-This registers `send_ip.py` as a systemd service that runs automatically on every boot after the network is up.
-
-## Useful commands
-
-```bash
-sudo systemctl status send_ip    # check if it ran
-sudo systemctl disable send_ip   # remove from boot
-journalctl -u send_ip            # view logs
-```
-
-## Requirements
-
-- Python 3
-- `requests` library (installed automatically by `setup_service.sh`)
+## Commands
+    systemctl status ip_watch
+    journalctl -u ip_watch -f
+    sudo systemctl disable --now ip_watch
